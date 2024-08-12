@@ -1,0 +1,51 @@
+[
+    {
+        "model": "reports.environment",
+        "pk": 1,
+        "fields": {
+            "name": "cd4_qa"
+        }
+    },
+    {
+        "model": "reports.environment",
+        "pk": 2,
+        "fields": {
+            "name": "cd4_stage"
+        }
+    },
+    {
+        "model": "reports.environment",
+        "pk": 3,
+        "fields": {
+            "name": "local_k8s"
+        }
+    },
+    {
+        "model": "reports.environment",
+        "pk": 4,
+        "fields": {
+            "name": "on_prem_windows"
+        }
+    },
+    {
+        "model": "reports.environment",
+        "pk": 5,
+        "fields": {
+            "name": "on_prem_linux"
+        }
+    },
+    {
+        "model": "reports.environment",
+        "pk": 6,
+        "fields": {
+            "name": "Azure"
+        }
+    },
+    {
+        "model": "reports.environment",
+        "pk": 7,
+        "fields": {
+            "name": "dedicated"
+        }
+    }
+]

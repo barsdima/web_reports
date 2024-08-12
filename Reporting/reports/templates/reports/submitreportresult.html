@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+    <title>Submit Report Summary</title>
+</head>
+
+<body>
+    {% include "reports/navbar.html" %}
+    <div class="header">
+        <h2>Submit report summary</h2>
+    </div>
+    <div id="form-container">
+        <table>
+            <tr>
+                <th>Report</th>
+                <th>Status</th>
+            </tr>
+            {% for report in summary %}
+            <tr>
+                <td>{{ report.report }}</td>
+                <td>{{ report.status }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</body>
+
+</html>

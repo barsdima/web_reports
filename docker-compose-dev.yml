@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: reporting
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - 23306:3306
+    volumes:
+      - myvolume:/var/lib/mysql_db
+
+  web:
+    build: .
+    command: bash -c "python check_db.py --service-name MySQL --ip db --port 3306 &&
+                      BUILD_TYPE=PROD python Reporting/manage.py migrate &&
+                      BUILD_TYPE=PROD python Reporting/manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  myvolume:

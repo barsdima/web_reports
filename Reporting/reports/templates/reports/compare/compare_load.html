@@ -1,0 +1,46 @@
+<div id="table-container">
+    <table id="compare-table">
+        <tr>
+            <th></th>
+            {% for report in to_compare %}
+                <th>{{ report.datapack.name }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Report</td>
+            {% for report in to_compare %}
+                <td><a href="{% url 'report_detail' report.id %}">{{ report.name }}</a></td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM</td>
+            {% for val in comparison_result.preloaded_dlm %}
+                <td>{{ val }} kryptons</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>No DLM</td>
+            {% for val in comparison_result.no_dlm %}
+                <td>{{ val }} kryptons</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (100 oovs)</td>
+            {% for val in comparison_result.dynamic_dlm_100_oovs %}
+                <td>{{ val }} kryptons</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.dynamic_dlm_1000_oovs %}
+                <td>{{ val }} kryptons</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.dynamic_dlm_10000_oovs %}
+                <td>{{ val }} kryptons</td>
+            {% endfor %}
+        </tr>
+    </table>
+</div>

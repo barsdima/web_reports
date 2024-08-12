@@ -1,0 +1,107 @@
+[
+    {
+        "model": "reports.testingtype",
+        "pk": 1,
+        "fields": {
+            "name": "MIX_accuracy_test_8k"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 2,
+        "fields": {
+            "name": "MIX_accuracy_test_16k"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 3,
+        "fields": {
+            "name": "ASR_functional_test"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 4,
+        "fields": {
+            "name": "NLU_functional_test"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 5,
+        "fields": {
+            "name": "load_test"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 6,
+        "fields": {
+            "name": "formatting_test"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 7,
+        "fields": {
+            "name": "NTE5"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 8,
+        "fields": {
+            "name": "DNN_TravelCorpus"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 9,
+        "fields": {
+            "name": "MIX_TravelCorpus_2.15"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 10,
+        "fields": {
+            "name": "MIX_TravelCorpus_2.22"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 11,
+        "fields": {
+            "name": "NLE_NES_TravelCorpus"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 12,
+        "fields": {
+            "name": "MIX_NLU"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 13,
+        "fields": {
+            "name": "MIX_E2E"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 14,
+        "fields": {
+            "name": "NES_accuracy_test_8k"
+        }
+    },
+    {
+        "model": "reports.testingtype",
+        "pk": 15,
+        "fields": {
+            "name": "FAST_DNN_TravelCorpus"
+        }
+    }
+]

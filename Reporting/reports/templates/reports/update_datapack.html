@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	{% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+    <meta charset="UTF-8">
+    <title>Update Datapack</title>
+</head>
+<body>
+    {% include "reports/navbar.html" %}
+	<div class="header">
+		<h2>Update Datapack</h2>
+	</div>
+	<div id="form-container">
+		<form action="" method="post">
+			{% csrf_token %}
+			<div class="input-container">
+				{% for field in form %}
+					{{ field.label_tag }}
+					{{ field }}
+				{% endfor %}
+				<div></div>
+				<button class="blue-btn" role="submit" style="width: 10%;">
+					Submit
+				</button>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

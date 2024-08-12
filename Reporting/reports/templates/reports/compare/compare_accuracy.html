@@ -1,0 +1,22 @@
+<div id="table-container">
+    <table id="compare-table">
+        <tr>
+            <th></th>
+            {% for report in to_compare %}
+                <th>{{ report.datapack.name }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Report</td>
+            {% for report in to_compare %}
+                <td><a href="{% url 'report_detail' report.id %}">{{ report.name }}</a></td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>WER Difference (WER w/o DLM - WER w/ DLM)</td>
+            {% for WER in comparison_result %}
+                <td>{{ WER|floatformat:5 }}</td>
+            {% endfor %}
+        </tr>
+    </table>
+</div>

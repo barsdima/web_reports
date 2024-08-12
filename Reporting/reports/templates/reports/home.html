@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Web Tool</title>
+    {% load static %}
+    <link rel="icon"href="{% static 'img/favicon.png' %}">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Sora&display=swap');
+
+        body {
+            padding: 1rem 1rem;
+            font-family: 'Sora', sans-serif
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Sora&display=swap');
+
+        * {
+            font-family: 'Sora', sans-serif;
+        }
+
+        button {
+            width: 100%;
+            cursor: pointer;
+            border-radius: 3.01px;
+            padding: 1rem 1rem;
+            border: none;
+            background-color: #0052cc;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            text-decoration: none;
+        }
+
+        button:hover {
+            background-color: #4c9aff;
+        }
+
+        #menu_table {
+            padding: 1rem 6rem;
+            border-top: 1px lightgrey solid;
+        }
+
+        #grid-container {
+            margin: 2rem 2rem;
+            display: grid;
+            grid-template-columns: auto auto auto;
+            column-gap: 3rem;
+            row-gap: 2rem;
+        }
+
+        .nuance-logo {
+            max-width: 5%;
+            height: auto;
+        }
+    </style>
+
+    <script type="text/javascript">
+        var img = new Image();
+        img.src = "{% static 'img/nuance-logo.webp' %}"; // background image
+    </script>
+</head>
+
+<body>
+    <img class="nuance-logo" src="{% static 'img/nuance-logo.webp' %}" alt="Logo">
+    <h2 class="logoright">Language Team Report Management Application</h2>
+    <div id="menu_table">
+        <div id="grid-container">
+            <a href="{% url 'reports' %}"><button type="button">View Reports</button></a>
+            <a href="{% url 'submit_report' %}"><button type="button">Submit Reports</button></a>
+            <a href="{% url 'dptracking' %}"><button type="button">Datapack Tracking</button></a>
+        </div>
+    </div>
+</body>
+
+</html>

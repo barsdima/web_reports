@@ -1,0 +1,46 @@
+<style>
+    ::placeholder {
+        color: #c7c7c7; /* set the color to a lighter shade */
+    }
+</style>
+<template id="id_formset_empty_form">
+    <label for="id_form-__prefix__-file_report">File report</label>
+    <input type="file" name="form-__prefix__-file_report" id="id_form-__prefix__-file_report">
+
+    <label for="id_form-__prefix__-name" class="required">Name</label>
+    <input type="text" name="form-__prefix__-name" maxlength="200" id="id_form-__prefix__-name" placeholder="fra-FRA-DTV-4.4.13 - travel corpus">
+
+    <label for="id_form-__prefix__-accuracy">Accuracy</label>
+    <select name="form-__prefix__-accuracy" id="id_form-__prefix__-accuracy" style="width: 100%;">
+        <option value="n/a">n/a</option>
+        <option value="nadp">nadp</option>
+        <option value="ndp">ndp</option>
+    </select>
+
+    <label for="id_form-__prefix__-datapack" class="required">Datapack</label>
+    <input type="text" name="form-__prefix__-datapack" id="id_form-__prefix__-datapack" placeholder="fra-FRA-DTV-4.4.13">
+
+    <label for="id_form-__prefix__-testing_type" class="required">Testing type</label>
+    <select name="form-__prefix__-testing_type" id="id_form-__prefix__-testing_type" style="width: 100%;">
+        {% for testing_type in from_db.testing_types %}
+            <option value="{{ testing_type.id }}">{{ testing_type.name }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="id_form-__prefix__-environment">Environment</label>
+    <select name="form-__prefix__-environment" id="id_form-__prefix__-environment" style="width: 100%;">
+        {% for environment in from_db.environments %}
+            <option value="{{ environment.id }}">{{ environment.name }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="id_form-__prefix__-link_QAServer">Logs</label>
+    <input type="text" name="form-__prefix__-link_QAServer" id="id_form-__prefix__-link_QAServer" placeholder="\\mt-afs01\entrd_qa\LanguageQA\dtv_fra_FRA\4.4.13\MIX_3.0\TravelCorpus_Mix_results\Mix_20221018_QNLU2.22">
+
+    <label for="id_form-__prefix__-jira">Jira</label>
+    <input type="text" name="form-__prefix__-jira" id="id_form-__prefix__-jira" placeholder="https://ent-jira.nuance.com/browse/XLANG-5390">
+
+    <label for="id_form-__prefix__-notes" style="margin-bottom: 3rem;">Notes</label>
+    <textarea name="form-__prefix__-notes" cols="40" rows="3" id="id_form-__prefix__-notes" placeholder="Mentions mismatch: 1"
+        style="margin-bottom: 3rem;"></textarea>
+</template>

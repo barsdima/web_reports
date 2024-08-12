@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	{% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ajaxy/1.6.1/scripts/jquery.ajaxy.min.js"></script>
+	<meta charset="UTF-8">
+	<title>Update Report</title>
+</head>
+
+<body>
+	{% include "reports/navbar.html" %}
+	<div class="header">
+		<h2>Update Report: {{ report.name }}</h2>
+	</div>
+	<div id="form-container">
+		<form action="" method="post" enctype="multipart/form-data">
+			{% csrf_token %}
+			<table class="update-report-table">
+				<tr>
+					<td>Report Name</td>
+					<td>{{ form.name }}</td>
+				</tr>
+				<tr>
+					<td>Datapack</td>
+					<td>{{ report.datapack }}</td>
+				</tr>
+				<tr>
+					<td>Accuracy</td>
+					<td>{{ form.accuracy }}</td>
+				</tr>
+				<tr>
+					<td>Testing Type</td>
+					<td>{{ form.testing_type }}</td>
+				</tr>
+				<tr>
+					<td>Environment</td>
+					<td>{{ form.environment }}</td>
+				</tr>
+				<tr>
+					<td>Tester</td>
+					<td>{{ report.tester }}</td>
+				</tr>
+				<tr>
+					<td>Status</td>
+					<td>{{ form.status }}</td>
+				</tr>
+				<tr>
+					<td>Submit Date</td>
+					<td>{{ report.date_submit }}</td>
+				</tr>
+				<tr>
+					<td>Approve Date</td>
+					<td>{{ report.date_approve }}</td>
+				</tr>
+				<tr>
+					<td>Approve By</td>
+					<td>{{ report.approveBy }}</td>
+				</tr>
+				<tr>
+					<td>File</td>
+					<td>
+						<div>{{ report.file_report }}</div>
+						<div>{{ form.file_report }}</div>
+					</td>
+				</tr>
+				<tr>
+					<td>Log</td>
+					<td>{{ form.link_QAServer }}</td>
+				</tr>
+				<tr>
+					<td>JIRA</td>
+					<td>{{ form.jira }}</td>
+				</tr>
+				<tr>
+					<td>Notes</td>
+					<td>{{ form.notes }}</td>
+				</tr>
+			</table>
+			<div class="progress">
+				<div class="progress-bar" role="progressbar">
+					<span class="progress-text"></span>
+				</div>
+			</div>
+			<button class="blue-btn" role="submit">
+				Save Changes
+			</button>
+		</form>
+	</div>
+</body>
+<script>
+$(document).ready(function() {
+  $('#form-container form').submit(function(e) {
+    e.preventDefault(); // prevent the form from submitting to the server
+
+    var form = $(this);
+    var formData = new FormData(form[0]);
+
+    var fileInput = form.find('input[type="file"]');
+    var fileSelected = fileInput.get(0).files.length > 0;
+
+    $.ajax({
+      url: form.attr('action'),
+      type: form.attr('method'),
+      data: formData,
+      processData: false,
+      contentType: false,
+      xhr: function() {
+        var xhr = new window.XMLHttpRequest();
+        if (fileSelected) {
+          xhr.upload.addEventListener('progress', function(event) {
+            if (event.lengthComputable) {
+              var percent = Math.round((event.loaded / event.total) * 100);
+              console.log(percent);
+              // update progress bar
+              $('.progress-bar').css('width', percent + '%');
+			  $('.progress-text').text(percent + '%');
+            }
+          });
+        }
+        return xhr;
+      },
+      success: function(response) {
+        // redirect to the homepage after a successful upload
+        window.location.href = "{% url 'reports' %}";
+      }
+    });
+  });
+});
+
+</script>
+</html>

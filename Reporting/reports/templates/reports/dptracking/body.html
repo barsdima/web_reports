@@ -1,0 +1,55 @@
+<table id="datapacks-table">
+	<tr>
+		{% if request.user.is_authenticated %}
+			<th></th>
+		{% endif %}
+		<th>ID</th>
+		<th>Name</th>
+		<th>Status</th>
+		{% for testing_type in testing_types %}
+			<th>{{ testing_type }}</th>
+		{% endfor %}
+	</tr>
+	{% for datapack, reports_by_testing_type in datapacks_and_reports %}
+		<tr>
+			{% if request.user.is_authenticated %}
+				<td>
+					<a href="{% url 'update_datapack' datapack.id %}">Edit</a>
+				</td>
+			{% endif %}
+			<td>{{ datapack.id }}</td>
+			<td>{{ datapack.name }}</td>
+			{% if datapack.status == "In Progress" %}
+				<td bgcolor="#E9EC6B">
+			{% elif datapack.status == "Completed" %}
+				<td bgcolor="#77DD77">
+			{% elif datapack.status == "Not Released" %}
+				<td bgcolor="#CFCFC4">
+			{% endif %}
+				{{ datapack.status }}
+			</td>
+			{% for testing_type, reports in reports_by_testing_type.items %}
+				{% if reports %}
+					<td>
+						{% for report in reports %}
+							{% if report.status == "Pending Approval" %}
+								<div style="background-color: #E9EC6B; padding: 10px;">
+							{% elif report.status == "Pass" %}
+								<div style="background-color: #77DD77; padding: 10px;">
+							{% elif report.status == "Fail" %}
+								<div style="background-color: #FF6961; padding: 10px;">
+							{% else %}
+								<div>
+							{% endif %}
+								{{ report.status }}
+								<a href="{% url 'report_detail' report.id %}">Report ID: {{ report.id }}</a>
+							</div>
+						{% endfor %}
+					</td>
+				{% else %}
+					<td></td>
+				{% endif %}
+			{% endfor %}
+		</tr>
+	{% endfor %}
+</table>

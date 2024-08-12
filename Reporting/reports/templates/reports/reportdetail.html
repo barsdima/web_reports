@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+    <title>View Report</title>
+</head>
+
+<body>
+    {% include "reports/navbar.html" %}
+    <div class="header">
+        <h2>Language QA Team Test Reports Site</h2>
+    </div>
+    <div id="form-container">
+        <table class="report-detail">
+            <tr>
+                <th colspan="2" class="detail-header">
+                    <h2>{{ report.name }}</h2>
+                </th>
+            </tr>
+            <tr>
+                <td>Datapack</td>
+                <td>{{ report.datapack }}</td>
+            </tr>
+            <tr>
+                <td>Accuracy</td>
+                <td>{{ report.accuracy }}</td>
+            </tr>
+            <tr>
+                <td>Testing Type</td>
+                <td>{{ report.testing_type }}</td>
+            </tr>
+            <tr>
+                <td>Environment</td>
+                <td>{{ report.environment }}</td>
+            </tr>
+            <tr>
+                <td>Tester</td>
+                <td>{{ report.tester }}</td>
+            </tr>
+            <tr>
+                <td>Status</td>
+                <td>{{ report.status }}</td>
+            </tr>
+            <tr>
+                <td>Submit Date</td>
+                <td>{{ report.date_submit }}</td>
+            </tr>
+            <tr>
+                <td>Approve Date</td>
+                <td>{{ report.date_approve }}</td>
+            </tr>
+            <tr>
+                <td>Approve By</td>
+                <td>{{ report.approveBy }}</td>
+            </tr>
+            <tr>
+                <td>File</td>
+                {% if report.file_report %}
+					{% if report.file_report.size < 1000000 and report.extension == ".txt" or report.extension == ".TXT" %}
+						<td>{{ report.file_report }}
+                            <span class="download-btn-spn"><a href="{% url 'view_file' report.pk %}"><button class="blue-btn" type="button">View</button></a></span>
+                        </td>
+					{% else %}
+						<td>{{ report.file_report }}
+                            <span class="download-btn-spn"><a href="{% url 'download_file' report.pk %}"><button class="blue-btn" type="button">Download</button></a></span>
+                        </td>
+					{% endif %}
+				{% else %}
+						<td></td>
+				{% endif %}
+            </tr>
+            <tr>
+                <td>Log</td>
+                {% if report.link_QAServer %}
+                    <td style="display: flex; align-items: center;">
+                        <span>{{ report.link_QAServer }}</span>
+                        <button class="copy-button" data-toggle="popover" data-placement="right"
+                            onclick="copyCell(event, this)">
+                            <img src="{% static 'img/clipboard.png' %}" alt="copy" width="40" height="40">
+                        </button>
+                    </td>
+                {% else %}
+                    <td></td>
+                {% endif %}
+            </tr>
+            <tr>
+                <td>JIRA</td>
+                <td>{{ report.jira|urlize }}</td>
+            </tr>
+            <tr>
+                <td>Notes</td>
+                <td>{{ report.notes }}</td>
+            </tr>
+        </table>
+        <div>
+        {% if request.user.is_authenticated %}
+        <a href="{% url 'update_report' report.id %}"><button class="blue-btn" type="button">Edit</button></a>
+        <a href="{% url 'delete_report' report.id %}"><button class="red-btn" type="button">Delete</button></a>
+	    {% endif %}
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</body>
+<script>
+    function unsecuredCopyToClipboard(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+        } catch (err) {
+            console.error('Unable to copy to clipboard', err);
+        }
+        document.body.removeChild(textArea);
+	}
+
+	function copyCell(event, button) {
+        event.preventDefault();
+        let cellText = button.previousElementSibling.innerText;
+        if (cellText.trim() !== "") {
+            unsecuredCopyToClipboard(cellText);
+            $(button).popover({
+                content: "Copied to clipboard",
+                trigger: "manual"
+            }).popover("show");
+            setTimeout(() => {
+                $(button).popover("hide");
+            }, 1000);
+        } else {
+            $(button).popover({
+                content: "Nothing to copy",
+                trigger: "manual"
+            }).popover("show");
+            setTimeout(() => {
+                $(button).popover("hide");
+            }, 1000);
+        }
+        $(button).removeAttr("title");
+	}
+</script>
+</html>

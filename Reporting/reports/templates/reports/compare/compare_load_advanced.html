@@ -1,0 +1,372 @@
+<div class="box">
+    <form method="POST" action="{% url 'filter_stats' %}">
+      {% csrf_token %}
+      <input type="hidden" name="to_compare" value='{{ to_compare }}'>
+      <fieldset class="item toggle-item">
+        <div class="legend-container">
+            <legend>Select Statistics</legend>
+        </div>
+        <ul id="stats-menu" class="scrollable-dropdown-list">
+          <li>
+            <input type="checkbox" class="custom-control-input filter" id="choice_0" name="choice" value="choice_0">
+            <label for="choice_0"class="custom-control-label">Audio</label>
+          </li>
+          <li>  
+            <input type="checkbox" class="custom-control-input filter" id="choice_1" name="choice" value="choice_1">
+            <label for="choice_1"class="custom-control-label">AudioTX</label>
+          </li>
+          <li>
+            <input type="checkbox" class="custom-control-input filter" id="choice_2" name="choice" value="choice_2">
+            <label for="choice_2"class="custom-control-label">Lag</label>
+          </li>
+          <li>
+              <input type="checkbox" class="custom-control-input filter" id="choice_3" name="choice" value="choice_3">
+              <label for="choice_3"class="custom-control-label">Rec</label>
+          </li>
+          <li>
+              <input type="checkbox" class="custom-control-input filter" id="choice_4" name="choice" value="choice_4">
+              <label for="choice_4"class="custom-control-label">Conf</label>
+          </li>
+          <li>
+              <input type="checkbox" class="custom-control-input filter" id="choice_5" name="choice" value="choice_5">
+              <label for="choice_5"class="custom-control-label">Average Latency</label>
+          </li>
+          <li>
+              <input type="checkbox" class="custom-control-input filter" id="choice_6" name="choice" value="choice_6">
+              <label for="choice_6"class="custom-control-label">95% Latency</label>
+          </li>
+          <li>
+              <input type="checkbox" class="custom-control-input filter" id="choice_7" name="choice" value="choice_7">
+              <label for="choice_7"class="custom-control-label">Average CPL</label>
+          </li>
+          <li>
+              <input type="checkbox" class="custom-control-input filter" id="choice_8" name="choice" value="choice_8">
+              <label for="choice_8"class="custom-control-label">95% CPL</label>
+          </li>
+        </ul>
+        <button style="margin-left: 10px;" class="blue-btn" role="button">
+            Filter
+        </button>
+      </fieldset>
+    </form>
+  </div>
+  
+<div id="table-container">
+    <table id="compare-table">
+        <tr>
+            <th>data type</th>
+            <th>subtest</th>
+            {% for report in to_compare %}
+                <th><a id="load-comp-name" href="{% url 'report_detail' report.id %}">{{ report.name }}</a></th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th>Accuracy</th>
+            <td></td>
+            {% for val in comparison_result.accuracy %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th id="data-type1" rowspan="7">stats</th>
+            <td>Preloaded DLM (100 oovs)</td>
+            {% for val in comparison_result.stats.preloaded_dlm_100_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.stats.preloaded_dlm_1000_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.stats.preloaded_dlm_10000_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>No DLM</td>
+            {% for val in comparison_result.stats.no_dlm %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (100 oovs)</td>
+            {% for val in comparison_result.stats.dynamic_dlm_100_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.stats.dynamic_dlm_1000_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.stats.dynamic_dlm_10000_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th rowspan="7">monitors</th>
+            <td>Preloaded DLM (100 oovs)</td>
+            {% for val in comparison_result.monitors.preloaded_dlm_100_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.monitors.preloaded_dlm_1000_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.monitors.preloaded_dlm_10000_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>No DLM</td>
+            {% for val in comparison_result.monitors.no_dlm %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (100 oovs)</td>
+            {% for val in comparison_result.monitors.dynamic_dlm_100_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.monitors.dynamic_dlm_1000_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.monitors.dynamic_dlm_10000_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th id="data-type1" rowspan="7">calls</th>
+            <td>Preloaded DLM (100 oovs)</td>
+            {% for val in comparison_result.calls.preloaded_dlm_100_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.calls.preloaded_dlm_1000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.calls.preloaded_dlm_10000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>No DLM</td>
+            {% for val in comparison_result.calls.no_dlm %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (100 oovs)</td>
+            {% for val in comparison_result.calls.dynamic_dlm_100_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.calls.dynamic_dlm_1000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.calls.dynamic_dlm_10000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th rowspan="7">recognitions</th>
+            <td>Preloaded DLM</td>
+            {% for val in comparison_result.recognitions.preloaded_dlm_100_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.recognitions.preloaded_dlm_1000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.recognitions.preloaded_dlm_10000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>No DLM</td>
+            {% for val in comparison_result.recognitions.no_dlm %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (100 oovs)</td>
+            {% for val in comparison_result.recognitions.dynamic_dlm_100_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.recognitions.dynamic_dlm_1000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.recognitions.dynamic_dlm_10000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th id="data-type1" rowspan="7">success</th>
+            <td>Preloaded DLM (100 oovs)</td>
+            {% for val in comparison_result.success.preloaded_dlm_100_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.success.preloaded_dlm_1000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.success.preloaded_dlm_10000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>No DLM</td>
+            {% for val in comparison_result.success.no_dlm %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (100 oovs)</td>
+            {% for val in comparison_result.success.dynamic_dlm_100_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.success.dynamic_dlm_1000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.success.dynamic_dlm_10000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th rowspan="7">kryptons</th>
+            <td>Preloaded DLM (100 oovs)</td>
+            {% for val in comparison_result.kryptons.preloaded_dlm_100_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.kryptons.preloaded_dlm_1000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.kryptons.preloaded_dlm_10000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>No DLM</td>
+            {% for val in comparison_result.kryptons.no_dlm %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (100 oovs)</td>
+            {% for val in comparison_result.kryptons.dynamic_dlm_100_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.kryptons.dynamic_dlm_1000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.kryptons.dynamic_dlm_10000_oovs %}
+                <td>{{ val }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <th id="data-type1" rowspan="7">errors</th>
+            <td>Preloaded DLM (100 oovs)</td>
+            {% for val in comparison_result.errors.preloaded_dlm_100_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.errors.preloaded_dlm_1000_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Preloaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.errors.preloaded_dlm_10000_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>No DLM</td>
+            {% for val in comparison_result.errors.no_dlm %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (100 oovs)</td>
+            {% for val in comparison_result.errors.dynamic_dlm_100_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (1000 oovs)</td>
+            {% for val in comparison_result.errors.dynamic_dlm_1000_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Dynamically loaded DLM (10000 oovs)</td>
+            {% for val in comparison_result.errors.dynamic_dlm_10000_oovs %}
+                <td>{{ val|linebreaksbr }}</td>
+            {% endfor %}
+        </tr>
+    </table>
+</div>

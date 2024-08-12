@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stats test</title>
+</head>
+<body>
+    <h1>The following stats were selected by the user:</h1>
+    {% for stat in stats %}
+        <div>
+            {{ stat }}
+        </div>
+    {% endfor %}
+
+    <h1>The following reports are being compared:</h1>
+    {% for report in reports %}
+        <div>
+            {{ report }}
+        </div>
+    {% endfor %}
+    <h1>And this is the comparison stats (one of them):</h1>
+    {% for val in comparison %}
+        <div>{{ val|linebreaksbr }}</div>
+        <div>_________________________</div>
+    {% endfor %}
+</body>
+</html>

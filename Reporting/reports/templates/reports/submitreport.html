@@ -1,0 +1,253 @@
+<html>
+    <head>
+        {% load static %}
+        <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+        <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <title>Submit report</title>
+    </head>
+    <body>
+        {% include "reports/navbar.html" %}
+        <div class="header">
+			<h2>Submit report</h2>
+		</div>
+        <div id="form-container">
+            <form action="" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ formset.management_form }}
+                {% include "reports/emptysubmitreport.html" %}
+                <div id="forms">
+                </div>
+                <br>
+                <div style="width: 15%; text-align: right;">
+                    <button type="button" id="add-report-btn">Add Another</button>
+                </div>
+
+                <div class="input-container">
+                    <div></div>
+                    <div class="btn-container">
+                        <button id="submit-btn" role="button" aria-disabled="false">
+                            <span class="ui-button-text">Submit</span>
+                        </button>
+                        <a href="{% url 'reports' %}" style="margin-left: 12px;">
+                            Cancel
+                        </a>
+                    </div>
+                </div>
+                <br>
+            </form>
+        </div>
+    </body>
+    <script>
+        window.addEventListener('load', (event) => {
+            // =========================== DOM NODES ===========================
+            const templateForm = document.getElementById('id_formset_empty_form');
+            const inputTotalForms = document.querySelector('input[id$="-TOTAL_FORMS"]');
+            const inputInitialForms = document.querySelector('input[id$="-INITIAL_FORMS"]');
+
+            const containerFormSet = document.getElementById('forms');
+            const buttonAdd = document.getElementById('add-report-btn');
+            const buttonSubmit = document.getElementById('submit-btn');
+
+
+
+            // =========================== STATES ===========================
+            // form counters (note: proper form index bookkeeping is necessary
+            // because django's formset will create empty forms for any missing
+            // indices, and will discard forms with indices >= TOTAL_FORMS, which can
+            // lead to funny behavior in some edge cases)
+            const initialForms = Number(inputInitialForms.value);
+            let extraFormIndices = [];
+            let nextFormIndex = initialForms;
+
+
+
+            // =========================== EVENT HANDLERS BINDING ===========================
+            buttonAdd.onclick = addForm;
+            buttonSubmit.onclick = updateNameAttributes;
+
+
+
+            // =========================== EVENT HANDLERS ===========================
+            const onFileUploadHandler = (event) => {
+                if (event.target.value != "") {
+                    const report_name = removeExtension(event.target.value.split("\\").at(-1));
+                    // File name should be in form: language-topic-version_testType_environemnt
+                    // # e.g. fra-FRA-GEN-4.1.3_8K_Mix
+                    populateData(event.target.getAttribute("data-form-index"), ...report_name.split("_"));
+                }
+            }
+
+            function updateNameAttributes(event) {
+                // make sure the name indices are consecutive and smaller than
+                // TOTAL_FORMS (the name attributes end up as dict keys on the server)
+                // note we do not need to update the indices in the id attributes etc.
+                for (let [consecutiveIndex, formIndex] of extraFormIndices.entries()) {
+                    for (let formElement of getFormElements(formIndex)) {
+                        for (let element of formElement.querySelectorAll('input, textarea')) {
+                            if ('name' in element) {
+                                element.name = element.name.replace(
+                                    /(?<=\w+-)(__prefix__|\d+)(?=-\w+)/g,
+                                    (initialForms + consecutiveIndex).toString());
+                            }
+                        }
+                    }
+                }
+                updateTotalFormCount();
+            }
+
+
+
+            // =========================== DOM UPDATE FUNCTIONS ===========================
+            const populateData = (formId, datapack, testType = "", environment = "") => {
+                document.getElementById(`id_form-${formId}-datapack`).value = datapack;
+                document.getElementById(`id_form-${formId}-testing_type`).value = testType;
+                document.getElementById(`id_form-${formId}-environment`).value = environment;
+                document.getElementById(`id_form-${formId}-name`).value = `${datapack} - ${testType} - ${environment}`;
+            }
+
+            function addForm() {
+                // create DocumentFragment from template
+                const formFragment = templateForm.content.cloneNode(true);
+                children = ""
+
+                for (let element of formFragment.children) {
+                    // add a custom attribute to simplify bookkeeping
+                    element.dataset.formIndex = nextFormIndex.toString();
+                    // replace the __prefix__ placeholders by the actual form index
+                    children += element.outerHTML.replace(
+                        /(?<=\w+-)(__prefix__|\d+)(?=-\w+)/g,
+                        nextFormIndex.toString());
+                }
+                newContainer = document.createElement("div");
+                newContainer.id = `container-${nextFormIndex}`
+                newContainer.classList.add("input-container");
+                newContainer.dataset.formIndex = nextFormIndex.toString();
+                newContainer.innerHTML += `<strong id="form-title-${nextFormIndex}">Report ${extraFormIndices.length + 1}</strong><div><button id="${nextFormIndex}" class="red-btn">Delete</button></div>`;
+                newContainer.innerHTML += children;
+                containerFormSet.appendChild(newContainer);
+
+                // Handlers binding
+                // document.getElementById(`id_form-${nextFormIndex}-file_report`).onchange = onFileUploadHandler;
+                document.getElementById(nextFormIndex).onclick = removeForm;
+
+                // keep track of form indices
+                extraFormIndices.push(nextFormIndex++);
+            }
+
+            function removeForm(event) {
+                const containerToDelete = document.getElementById("container-" + event.target.id);
+                containerToDelete.parentNode.removeChild(containerToDelete);
+                // remove form index from array
+                let indexIndex = extraFormIndices.indexOf(Number(event.target.id));
+                if (indexIndex > -1) {
+                    extraFormIndices.splice(indexIndex, 1);
+                }
+                updateReportTitle();
+            }
+
+            function updateReportTitle() {
+                for (let [consecutiveIndex, formIndex] of extraFormIndices.entries()) {
+                    const title = document.getElementById("form-title-" + formIndex);
+                    if (title) {
+                        title.innerHTML = `Report ${consecutiveIndex + 1}`;
+                    }
+                }
+            }
+
+            function updateTotalFormCount(event) {
+                // note we could simply do initialForms + extraFormIndices.length
+                // to get the total form count, but that does not work if we have
+                // validation errors on forms that were added dynamically
+                const firstElement = templateForm.content.querySelector('input, textarea');
+                // select the first input or select element, then count how many ids
+                // with the same suffix occur in the formset container
+                if (firstElement) {
+                    let suffix = firstElement.id.split('__prefix__')[1];
+                    let selector = firstElement.tagName.toLowerCase() + '[id$="' + suffix + '"]';
+                    let allElementsForId = containerFormSet.querySelectorAll(selector);
+                    // update total form count
+                    inputTotalForms.value = allElementsForId.length;
+                }
+            }
+
+
+
+            // =========================== HELPERS ===========================
+            function getFormElements(index) {
+                // the data-form-index attribute is available as dataset.formIndex
+                // https://developer.mozilla.org/en-US/docs/Learn/HTML/Howto/Use_data_attributes#javascript_access
+                return containerFormSet.querySelectorAll('[data-form-index="' + index + '"]');
+            }
+
+            function removeExtension(filename) {
+                return filename.substring(0, filename.lastIndexOf('.')) || filename;
+            }
+
+
+
+            // =========================== INITIAL SETUP ===========================
+            addForm()   // Render initial form
+
+
+
+        }, false);
+
+        // $(document).ready(function() {
+        //     $('#form-container form').submit(function(e) {
+        //         e.preventDefault();
+        //         var largestFileSize = 0; // initialize variable to store largest file size
+
+        //         var form = $(this);
+        //         var formData = new FormData(form[0]);
+
+        //         // iterate through all file inputs to find largest file size
+        //         form.find('input[type="file"]').each(function() {
+        //         var fileSize = this.files[0].size;
+        //         if (fileSize > largestFileSize) {
+        //             largestFileSize = fileSize;
+        //         }
+        //         });
+
+        //         // continue with ajax request as before, but use the largestFileSize variable in the progress function
+        //         var fileInput = form.find('input[type="file"]');
+        //         var fileSelected = fileInput.get(0).files.length > 0;
+
+        //         $.ajax({
+        //         url: form.attr('action'),
+        //         type: form.attr('method'),
+        //         data: formData,
+        //         processData: false,
+        //         contentType: false,
+        //         xhr: function() {
+        //             var xhr = new window.XMLHttpRequest();
+        //             if (fileSelected) {
+        //             xhr.upload.addEventListener('progress', function(event) {
+        //                 if (event.lengthComputable) {
+        //                 var percent = Math.round((event.loaded / largestFileSize) * 100);
+        //                 console.log(percent);
+        //                 // update progress bar
+        //                 $('.progress-bar').css('width', percent + '%');
+        //                 // update percentage text
+        //                 $('.progress-text').text(percent + '%');
+        //                 }
+        //             });
+        //             }
+        //             return xhr;
+        //         },
+        //         success: function(response) {
+        //             // redirect to the homepage after a successful upload
+        //             window.location.href = "{% url 'reports' %}";
+        //         },
+        //         error: function(jqXHR, textStatus, errorThrown) {
+        //             if (jqXHR.status === 413) { // check if error is "payload too large" (413 status code)
+        //             window.location.href = "{% url 'reports' %}";
+        //             } else {
+        //             window.location.href = "{% url 'reports' %}";
+        //             }
+        //         }
+        //         });
+        //     });
+        // });
+    </script>
+</html>

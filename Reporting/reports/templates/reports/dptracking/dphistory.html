@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <title>Datapack History</title>
+</head>
+<body>
+    {% include "reports/navbar.html" %}
+    <div class="header">
+        <h2>Datapack History for: {{ dpname }}</h2>
+    </div>
+    <form action="" method="post">
+        {% csrf_token %}
+        </br>
+        <div class="table-container">
+            <table id="reports-table">
+                <tr>
+                    {% if request.user.is_authenticated %}
+                        <th></th>
+                        <th></th>
+                    {% endif %}
+                    <th>Submitted Date</th>
+                    <th>ID</th>
+                    <th>Report Name</th>
+                    <th>Report File</th>
+                    <th>Accuracy</th>
+                    <th>Environment</th>
+                    <th>Testing Type</th>
+                    <th>Tester</th>
+                    <th>Test Execution Logs</th>
+                    <th>Status</th>
+                    <th>Approved By</th>
+                    <th>Approved Date</th>
+                    <th>Notes</th>
+                    <th>JIRA</th>
+                </tr>
+                {% for report in reports %}
+                    <tr>
+                        {% if request.user.is_authenticated %}
+                            <td><a href="{% url 'update_report' report.id %}">Edit</a></td>
+                            <td><a href="{% url 'delete_report' report.id %}">Delete</a></td>
+                        {% endif %}
+                        <td>{{ report.date_submit|date:"Y-m-d" }}</td>
+                        <td>{{ report.id }}</td>
+                        <td>
+                            <a href="{% url 'report_detail' report.id %}">{{ report.name }}</a>
+                        </td>
+                        {% if report.file_report is not None %}
+                            {% if report.file_report.size >= 1000000 or report.extension != ".txt" %}
+                                <td><a href="{% url 'download_file' report.pk %}" target="_self">Download</a></td>
+                            {% else %}
+                                <td><a href="{% url 'view_file' report.pk %}" target="_blank">View</a></td>
+                            {% endif %}
+                        {% else %}
+                            <td></td>
+                        {% endif %}
+                        <td>{{ report.accuracy }}</td>
+                        <td>{{ report.environment }}</td>
+                        <td>{{ report.testing_type }}</td>
+                        {% if report.tester.email %}
+                            <td>{{ report.tester.email|slice:":-11" }}</td>
+                        {% else %}
+                            <td>{{ report.tester.username }}</td>
+                        {% endif %}
+                        <td style="display: flex; align-items: center;border: 1px solid #cecfd4;">
+                            <button class="copy-button" data-toggle="popover" data-placement="top" onclick="copyCell(event, this); $(this).removeAttr('title');" style="margin: auto;">
+                                <img src="{% static 'img/clipboard.png' %}" alt="copy" width="40" height="40">
+                            </button>								
+                              <span class="cell-text">{{ report.link_QAServer }}</span>
+                        </td>
+                        {% if report.status == "Pending Approval" %}
+                            <td style="background-color: #E9EC6B; padding: 10px;">
+                        {% elif report.status == "Pass" %}
+                            <td style="background-color: #77DD77; padding: 10px;">
+                        {% elif report.status == "Fail" %}
+                            <td style="background-color: #FF6961; padding: 10px;">
+                        {% else %}
+                            <td>
+                        {% endif %}
+                            {{ report.status|default_if_none:"" }}
+                        </td>
+                        <td>{{ report.approvedBy|slice:":-11"|default_if_none:"" }}</td>
+                        <td>{{ report.date_approve|date:"Y-m-d" }}</td>
+                        <td>{{ report.notes }}</td>
+                        <td><a href="{{ report.jira }}" target="_blank">{{ report.jira|slice:"35:"|safe }}</a></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </form>
+    <br>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+	<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</body>
+<script>
+    function unsecuredCopyToClipboard(text) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+        } catch (err) {
+            console.error('Unable to copy to clipboard', err);
+        }
+        document.body.removeChild(textArea);
+	}
+		
+
+		function copyCell(event, button) {
+			event.preventDefault();
+			let cellText = button.nextElementSibling.innerText;
+			if (cellText.trim() !== "") {
+				unsecuredCopyToClipboard(cellText);
+				$(button).popover({
+					content: "Copied to clipboard",
+					trigger: "manual"
+				}).popover("show");
+				setTimeout(() => {
+					$(button).popover("hide");
+				}, 1000);
+			} else {
+				$(button).popover({
+					content: "Nothing to copy",
+					trigger: "manual"
+				}).popover("show");
+				setTimeout(() => {
+					$(button).popover("hide");
+				}, 1000);
+			}
+			$(button).removeAttr("title");
+		}
+
+    // https://stackoverflow.com/a/49041392
+    const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+
+    const comparer = (idx, asc) => (a, b) => ((v1, v2) =>
+        v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+        )(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+    // do the work...
+    document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+        const table = th.closest('table');
+        Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+            .sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+            .forEach(tr => table.appendChild(tr) );
+    })));
+</script>
+</html>

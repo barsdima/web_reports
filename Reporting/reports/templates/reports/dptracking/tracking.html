@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		{% load static %}
+		<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+		<title>Datapack Tracking Site</title>
+	</head>
+	<body>
+		{% include "reports/navbar.html" %}
+		<div class="header">
+			<h2>Nuance Datapack Testing Progress</h2>
+		</div>
+		<form action="" method="post">
+			{% csrf_token %}
+			<div id="combobox" class="field" style="padding: 0px 16px;">
+				<span style="font-weight: 500;">Filters: </span>
+				{{ filter_form.topic }}{{ filter_form.language }}
+				<button class="blue-btn" role="button">
+					Filter
+				</button>
+				<a href="">
+					Clear
+				</a>
+			</div>
+		</form>
+		<br>
+		<div class="table-container">
+			{% include "reports/dptracking/body.html" %}
+		</div>
+		<br>
+	</body>
+	<script>
+		// https://stackoverflow.com/a/49041392
+		const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+
+		const comparer = (idx, asc) => (a, b) => ((v1, v2) =>
+			v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+			)(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+		// do the work...
+		document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+			const table = th.closest('table');
+			Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+				.sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+				.forEach(tr => table.appendChild(tr) );
+		})));
+	</script>
+</html>

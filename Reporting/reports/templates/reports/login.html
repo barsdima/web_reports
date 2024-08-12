@@ -1,0 +1,174 @@
+<html>
+
+<head>
+    {% load static %}
+    <style type="text/css">
+        body {
+            padding: 1rem 1rem;
+            /* font-family: Tahoma, Geneva, sans-serif; */
+        }
+
+        @import url('https://fonts.googleapis.com/css2?family=Sora&display=swap');
+        * {
+        font-family: 'Sora', sans-serif;
+        }
+
+        a {
+            color: #0052cc;
+            font-size: small;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        label {
+            color: #6b778c;
+            text-align: right;
+            vertical-align: middle;
+            display: flex;
+            align-items: center;
+            justify-content: end;
+        }
+
+        input,
+        textarea {
+            font-size: 1rem;
+            line-height: 20px;
+            padding: 3px 4px;
+            border-radius: 3.01px;
+            color: #172b4d;
+        }
+
+        input[type="text"], input[type="password"],
+        textarea {
+            border: 2px solid #dfe1e6;
+            background-color: #fafbfc;
+        }
+
+
+        input[type="text"]:hover, input[type="password"]:hover,
+        textarea:hover {
+            background-color: #eee;
+        }
+
+        input[type="text"]:focus, input[type="password"]:focus,
+        textarea:focus {
+            background-color: white;
+        }
+
+        .autofill-input {
+            color: #172b4d !important;
+            background: #ebecf0 !important;
+            cursor: pointer;
+        }
+
+        .autofill-input:hover {
+            background: #cecfd4 !important;
+        }
+
+        .autofill-input:focus {
+            background-color: white !important;
+            border-color: black !important;
+        }
+
+        .input-container {
+            display: grid;
+            grid-template-columns: 15% 70%;
+            column-gap: 12px;
+            row-gap: 20px;
+            text-align: right;
+        }
+
+        .required::after {
+            content: "*";
+            font-weight: bold;
+            font-size: 0.75rem;
+            color: red;
+        }
+
+        .btn-container {
+            text-align: right;
+        }
+
+        .delete-btn {
+            cursor: pointer;
+            background-color: white;
+            outline: none;
+            border: none;
+        }
+
+        #form-container {
+            padding: 1rem 6rem;
+            border-top: 1px lightgrey solid;
+        }
+
+        #report-file-desc {
+            font-size: 0.875rem;
+            line-height: 1rem;
+            color: #6b778c;
+        }
+
+        #submit-btn {
+            height: 30px;
+            background-color: #0052cc;
+            border: none;
+            border-radius: 3.01px;
+            padding: 0.25rem 1rem;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        #submit-btn:hover {
+            background-color: #4c9aff;
+        }
+
+        #add-report-btn {
+            cursor: pointer;
+            border-radius: 3.01px;
+            padding: 0.25rem 1rem;
+            border: 2px solid #0052cc;
+            color: #0052cc;
+            background-color: white;
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        #add-report-btn:hover {
+            background-color: lightgrey;
+        }
+    </style>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+    <title>Submit report</title>
+</head>
+
+<body>
+    <h2>Login</h2>
+    <div id="form-container">
+        <form action="" method="post">
+            <div class="input-container">
+                <label for="username" class="required">Username</label>
+                <input type="text" name="username">
+
+                <label for="password" class="required">Password</label>
+                <input type="password" name="password">
+            </div>
+
+            <div class="input-container">
+                <div></div>
+                <div class="btn-container">
+                    <button id="submit-btn" role="button" aria-disabled="false">
+                        <span class="ui-button-text">Login</span>
+                    </button>
+                </div>
+            </div>
+            {% csrf_token %}
+            <br>
+        </form>
+</body>
+
+</html>

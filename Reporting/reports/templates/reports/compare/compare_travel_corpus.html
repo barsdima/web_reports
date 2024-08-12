@@ -1,0 +1,94 @@
+<div id="table-container">
+    <table id="compare-table">
+        <tr>
+            <th></th>
+            {% for report in to_compare %}
+                <th>{{ report.datapack.name }}</th>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Report</td>
+            {% for report in to_compare %}
+                <td><a href="{% url 'report_detail' report.id %}">{{ report.name }}</a></td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Accuracy</td>
+            {% for report in to_compare %}
+                <td>{{ report.accuracy }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Testing Type</td>
+            {% for report in to_compare %}
+                <td>{{ report.testing_type }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Accuracy</td>
+            {% for report in to_compare %}
+                <td>{{ report.accuracy }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td># of Test Cases (in console_output_Obfuscated)</td>
+            {% for results in comparison_result %}
+                <td>{{ results.n_test_cases|default_if_none:"" }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td># of Failed Test Cases (in console_output_Obfuscated)</td>
+            {% for results in comparison_result %}
+                <td>{{ results.n_fails|default_if_none:"" }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td># of Intent Fails (in console_output_Obfuscated)</td>
+            {% for results in comparison_result %}
+                <td>{{ results.n_intent_fails|default_if_none:"" }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>
+                Failure Rate (in console_output_Obfuscated)
+                <br>
+                (# of Failed Test Cases in console_output_Obfuscated)/(# of Test Cases in console_output_Obfuscated)
+            </td>
+            {% for results in comparison_result %}
+                <td>{{ results.fail_rate|floatformat:5 }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>
+                Intent Failure Rate (in console_output_Obfuscated)
+                <br>
+                (# of Intent Failures in console_output_Obfuscated)/(# of Test Cases in console_output_Obfuscated)
+            </td>
+            {% for results in comparison_result %}
+                <td>{{ results.intent_fail_rate|floatformat:5 }}</td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Failures</td>
+            {% for results in comparison_result %}
+                <td>
+                    {% if results.fails_and_expected %}
+                        {% for fail, expected in results.fails_and_expected %}
+                            <div style="margin: 15px 0px;">
+                                {{ fail }}
+                                <br>
+                                {{ expected }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                </td>
+            {% endfor %}
+        </tr>
+        <tr>
+            <td>Notes</td>
+            {% for report in to_compare %}
+                <td>{{ report.notes }}</td>
+            {% endfor %}
+        </tr>
+    </table>
+</div>

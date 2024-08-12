@@ -1,0 +1,252 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		{% load static %}
+		<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}" />
+    	<link rel="icon"href="{% static 'img/favicon.png' %}">
+		<title>Reports Home</title>
+	</head>
+	<body>
+		{% include "reports/navbar.html" %}
+		<div class="header">
+			<h2>Language QA Team Test Reports Site</h2>
+		</div>
+		<form action="" method="post">
+			{% csrf_token %}
+			<div id="combobox" class="field" style="padding: 0px 16px;">
+				<span style="font-weight: 500;">Filters: </span>
+				{{ filter_form.datapack }}{{ filter_form.language }}{{ filter_form.topic }}{{ filter_form.test_type }}{{ filter_form.environment }}{{ filter_form.tester }}
+				<button class="blue-btn" role="button">
+					Filter
+				</button>
+				<a href="{% url 'reports' %}">
+					Clear
+				</a>
+			</div>
+			</br>
+			<div class="table-container">
+				<table id="reports-table">
+					<tr>
+						{% if request.user.is_authenticated %}
+							<th></th>
+							<th></th>
+						{% endif %}
+						<th>Compare</th>
+						<th>ID</th>
+						<th>Report Name</th>
+						<th>Report File</th>
+						<th>Accuracy</th>
+						<th>Datapack</th>
+						<th>Environment</th>
+						<th>Testing Type</th>
+						<th>Tester</th>
+						<th>Submitted Date</th>
+						<th>Test Execution Logs</th>
+						<th>Status</th>
+						<th>Approved By</th>
+						<th>Approved Date</th>
+						<th>Notes</th>
+						<th>JIRA</th>
+					</tr>
+					{% for report in reports %}
+						<tr>
+							{% if request.user.is_authenticated %}
+								<td><a href="{% url 'update_report' report.id %}">Edit</a></td>
+								<td><a href="{% url 'delete_report' report.id %}">Delete</a></td>
+							{% endif %}
+							<td><input type="checkbox" name="compare-{{ report.id }}" /></td>
+							<td>{{ report.id }}</td>
+							<td>
+								<a href="{% url 'report_detail' report.id %}">{{ report.name }}</a>
+							</td>
+							{% if report.file_report is not None %}
+								{% if report.file_report.size < 1000000 and report.extension == ".txt" or report.extension == ".TXT" %}
+									<td><a href="{% url 'view_file' report.pk %}" target="_blank">View</a></td>
+								{% else %}
+									<td><a href="{% url 'download_file' report.pk %}" target="_self">Download</a></td>
+								{% endif %}
+							{% else %}
+								<td></td>
+							{% endif %}
+							<td>{{ report.accuracy }}</td>
+							<td><a title="View datapack history" href="{% url 'datapack_history' datapack_name=report.datapack %}">{{ report.datapack }}</a></td>
+							<td>{{ report.environment }}</td>
+							<td>{{ report.testing_type }}</td>
+							{% if report.tester.email %}
+								<td>{{ report.tester.email|slice:":-11" }}</td>
+							{% else %}
+								<td>{{ report.tester.username }}</td>
+							{% endif %}
+							<td>{{ report.date_submit|date:"Y-m-d" }}</td>
+							<td style="display: flex; align-items: center;border: 1px solid #cecfd4;">
+								<button class="copy-button" data-toggle="popover" data-placement="top" onclick="copyCell(event, this); $(this).removeAttr('title');" style="margin: auto;">
+									<img src="{% static 'img/clipboard.png' %}" alt="copy" width="40" height="40">
+								</button>								
+      							<span class="cell-text">{{ report.link_QAServer }}</span>
+							</td>
+							{% if report.status == "Pending Approval" %}
+								<td style="background-color: #E9EC6B; padding: 10px;">
+							{% elif report.status == "Pass" %}
+								<td style="background-color: #77DD77; padding: 10px;">
+							{% elif report.status == "Fail" %}
+								<td style="background-color: #FF6961; padding: 10px;">
+							{% else %}
+								<td>
+							{% endif %}
+								{{ report.status|default_if_none:"" }}
+							</td>
+							<td>{{ report.approvedBy|slice:":-11"|default_if_none:"" }}</td>
+							<td>{{ report.date_approve|date:"Y-m-d" }}</td>
+							<td>{{ report.notes }}</td>
+							<td><a href="{{ report.jira }}" target="_blank">{{ report.jira|slice:"35:"|safe }}</a></td>
+						</tr>
+					{% endfor %}
+				</table>
+			</div>
+			<button class="blue-btn" role="button">
+				Compare
+			</button>
+		</form>
+		<div id="comparison-result">
+		{% if compare == False %}
+		{% elif same_datapack_type == False %}
+			<div class="header">
+				<h2>The selected reports do not belong to the same datapack type.</h2>
+			</div>
+		{% elif same_testing_type == False %}
+			<div class="header">
+				<h2>The selected reports do not have the same testing type.</h2>
+			</div>
+		{% elif reports_missing_file %}
+			<div class="header">
+				<h2>
+					The following reports do not have uploaded files:
+				</h2>
+			</div>
+			{% for report in reports_missing_file %}
+				<div>{{ report.name }}</div>
+			{% endfor %}
+		{% else %}
+			<div class="header">
+				<h2>{{ table_title }}</h2>
+			</div>
+			{% if testing_type == "MIX_accuracy_test_8k" or testing_type == "MIX_accuracy_test_16k" or testing_type == "NES_accuracy_test_8k" %}
+				{% include "reports/compare/compare_accuracy.html" %}
+			{% elif testing_type == "MIX_TravelCorpus_2.15" or testing_type == "MIX_TravelCorpus_2.22" or testing_type == "NLE_NES_TravelCorpus" or testing_type == "DNN_TravelCorpus" or testing_type == "FAST_DNN_TravelCorpus" %}
+				{% include "reports/compare/compare_travel_corpus.html" %}
+			{% elif testing_type == "NTE5" %}
+				{% include "reports/compare/compare_NTE5.html" %}
+			{% elif testing_type == "load_test" %}
+				{% include "reports/compare/compare_load_advanced.html" %}
+			{% else %}
+				Not supported.
+			{% endif %}
+		{% endif %}
+		</div>
+		<br>
+		<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+	</body>
+	<script>
+		function unsecuredCopyToClipboard(text) {
+			const textArea = document.createElement("textarea");
+			textArea.value = text;
+			document.body.appendChild(textArea);
+			textArea.focus();
+			textArea.select();
+			try {
+				document.execCommand('copy');
+			} catch (err) {
+				console.error('Unable to copy to clipboard', err);
+			}
+			document.body.removeChild(textArea);
+		}
+		
+		// function copyCell(event, button) {
+		// 	event.preventDefault();
+		// 	let cellText = button.nextElementSibling.innerText;
+		// 	navigator.clipboard.writeText(cellText).then(() => {
+		// 		$(button).popover({
+		// 		content: "Copied to clipboard",
+		// 		trigger: "manual"
+		// 		}).popover("show");
+		// 		setTimeout(() => {
+		// 		$(button).popover("hide");
+		// 		}, 1000);
+		// 	});
+		// 	$(button).removeAttr("title");
+		// }
+
+		function copyCell(event, button) {
+			event.preventDefault();
+			let cellText = button.nextElementSibling.innerText;
+			if (cellText.trim() !== "") {
+				unsecuredCopyToClipboard(cellText);
+				$(button).popover({
+					content: "Copied to clipboard",
+					trigger: "manual"
+				}).popover("show");
+				setTimeout(() => {
+					$(button).popover("hide");
+				}, 1000);
+			} else {
+				$(button).popover({
+					content: "Nothing to copy",
+					trigger: "manual"
+				}).popover("show");
+				setTimeout(() => {
+					$(button).popover("hide");
+				}, 1000);
+			}
+			$(button).removeAttr("title");
+		}
+
+		$(document).ready(function() {
+          // Listener for when you click on the dropdown menu
+          $('fieldset.toggle-item > .legend-container').on('click', (event) => {
+            // Adds or removes the 'selected' attribute on the dropdown menu you clicked
+            $(event.currentTarget).parent().toggleClass('selected')
+            // If you have multiple dropdown menus you may want it so that when you open Menu B, Menu A
+            // automatically closes.
+            // This line does that by removing 'selected' from every dropdown menu other than the one you clicked on.
+            // It's 'optional' but it definitely feels better if you have it
+            $('fieldset.toggle-item').not($(event.currentTarget).parent()).removeClass('selected')
+          })
+
+          // The user is probably going to expect that any and all dropdown menus will close if they click outside of them. Here's how to make that happen:
+
+          //This listens for whenever you let go of the mouse
+          $(document).mouseup(function(e)
+              {
+                  // make this a variable just to make the next line a little easier to read
+                  // a 'container' is now any
+                  var dropdown_menus = $("fieldset.toggle-item");
+
+                  // if the target of the click isn't a dropdown menu OR any of the elements inside one of them
+                  if (!dropdown_menus.is(e.target) && dropdown_menus.has(e.target).length === 0)
+                  {
+                    // then it will de-select (thereby closing) all the dropdown menus on the page
+                      $('fieldset.toggle-item').removeClass('selected')
+
+                  }
+              });
+        })
+
+		
+		// https://stackoverflow.com/a/49041392
+		const getCellValue = (tr, idx) => tr.children[idx].innerText || tr.children[idx].textContent;
+
+		const comparer = (idx, asc) => (a, b) => ((v1, v2) =>
+			v1 !== '' && v2 !== '' && !isNaN(v1) && !isNaN(v2) ? v1 - v2 : v1.toString().localeCompare(v2)
+			)(getCellValue(asc ? a : b, idx), getCellValue(asc ? b : a, idx));
+
+		// do the work...
+		document.querySelectorAll('th').forEach(th => th.addEventListener('click', (() => {
+			const table = th.closest('table');
+			Array.from(table.querySelectorAll('tr:nth-child(n+2)'))
+				.sort(comparer(Array.from(th.parentNode.children).indexOf(th), this.asc = !this.asc))
+				.forEach(tr => table.appendChild(tr) );
+		})));
+	</script>
+</html>

@@ -1,0 +1,81 @@
+<div class="header">
+    <h3>Feature results</h3>
+</div>
+<div class="table-container">
+    <table>
+        <tr>
+            <th></th>
+            {% for report in to_compare %}
+                <th>{{ report.datapack.name }}</th>
+            {% endfor %}
+        </tr>
+        {% for feature, values in comparison_result.features_and_results.items %}
+            <tr>
+                <td>{{ feature }}</td>
+                {% for value in values %}
+                {% if value == "Pass" %}
+                    <td style="background-color: #77DD77;">
+                {% elif value == "Fail" %}
+                    <td style="background-color: #ff6961;">
+                {% else %}
+                    <td>
+                {% endif %}
+                        {{ value }}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+<div class="header">
+    <h3>Test cases with different results between Reports</h3>
+</div>
+<div class="table-container">
+    <table id="compare-table">
+        <tr>
+            <th></th>
+            {% for report in to_compare %}
+                <th>{{ report.datapack.name }}</th>
+            {% endfor %}
+        </tr>
+        {% for test_case, values in comparison_result.test_cases_w_diff_results.items %}
+            <tr>
+                <td>{{ test_case }}</td>
+                {% for value in values %}
+                {% if value == "Pass" %}
+                    <td style="background-color: #77DD77;">
+                {% elif value == "Fail" %}
+                    <td style="background-color: #ff6961;">
+                {% else %}
+                    <td>
+                {% endif %}
+                        {{ value }}
+                    </td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+<div class="header">
+    <h3>Commonly passed and failed test cases</h3>
+</div>
+<div class="table-container">
+    <table>
+        <tr>
+            <th>Commonly Passed Test Cases</th>
+            <th>Commonly Failed Test Cases</th>
+        </tr>
+        <tr>
+            <td>
+                {% for passed_tc in comparison_result.common_passed_test_cases %}
+                    <div>{{ passed_tc }}</div>
+                {% endfor %}
+            </td>
+            <td>
+                {% for failed_tc in comparison_result.common_failed_test_cases %}
+                    <div>{{ failed_tc }}</div>
+                {% endfor %}
+            </td>
+        </tr>
+    </table>
+</div>
